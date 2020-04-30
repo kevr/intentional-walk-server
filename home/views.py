@@ -1,4 +1,3 @@
-import datetime
 import json
 from django.http import HttpResponseRedirect, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -127,12 +126,8 @@ class ContestCurrentView(View):
     http_method_names = ["get"]
 
     def get(self, request, *args, **kwargs):
-        today = datetime.date.today()
         # get the current/next Contest
-        contest = Contest.objects.filter(end__gte=today).order_by("start").first()
-        if contest is None:
-            # get the last contest
-            contest = Contest.objects.order_by("-end").first()
+        contest = Contest.active()
         if contest is None:
             return JsonResponse(
                 {
