@@ -140,6 +140,7 @@ class ContestCurrentView(View):
                 "status": "success",
                 "payload": {
                     "contest_id": contest.contest_id,
+                    "start_promo": contest.start_promo,
                     "start": contest.start,
                     "end": contest.end,
                 }

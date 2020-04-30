@@ -69,6 +69,7 @@ class ApiTestCase(TestCase):
             fail_message = f"Server response - {response_data}"
             self.assertEqual(response_data["status"], "success", msg=fail_message)
             self.assertEqual(response_data["payload"]["contest_id"], str(contest1.pk))
+            self.assertEqual(response_data["payload"]["start_promo"], "2020-04-24")
             self.assertEqual(response_data["payload"]["start"], "2020-05-01")
             self.assertEqual(response_data["payload"]["end"], "2020-05-31")
 
@@ -82,6 +83,7 @@ class ApiTestCase(TestCase):
             fail_message = f"Server response - {response_data}"
             self.assertEqual(response_data["status"], "success", msg=fail_message)
             self.assertEqual(response_data["payload"]["contest_id"], str(contest1.pk))
+            self.assertEqual(response_data["payload"]["start_promo"], "2020-04-24")
             self.assertEqual(response_data["payload"]["start"], "2020-05-01")
             self.assertEqual(response_data["payload"]["end"], "2020-05-31")
 
@@ -95,6 +97,7 @@ class ApiTestCase(TestCase):
             fail_message = f"Server response - {response_data}"
             self.assertEqual(response_data["status"], "success", msg=fail_message)
             self.assertEqual(response_data["payload"]["contest_id"], str(contest1.pk))
+            self.assertEqual(response_data["payload"]["start_promo"], "2020-04-24")
             self.assertEqual(response_data["payload"]["start"], "2020-05-01")
             self.assertEqual(response_data["payload"]["end"], "2020-05-31")
 
@@ -108,6 +111,7 @@ class ApiTestCase(TestCase):
             fail_message = f"Server response - {response_data}"
             self.assertEqual(response_data["status"], "success", msg=fail_message)
             self.assertEqual(response_data["payload"]["contest_id"], str(contest2.pk))
+            self.assertEqual(response_data["payload"]["start_promo"], "2020-06-21")
             self.assertEqual(response_data["payload"]["start"], "2020-07-01")
             self.assertEqual(response_data["payload"]["end"], "2020-07-31")
 
@@ -121,5 +125,6 @@ class ApiTestCase(TestCase):
             fail_message = f"Server response - {response_data}"
             self.assertEqual(response_data["status"], "success", msg=fail_message)
             self.assertEqual(response_data["payload"]["contest_id"], str(contest2.pk))
+            self.assertEqual(response_data["payload"]["start_promo"], "2020-06-21")
             self.assertEqual(response_data["payload"]["start"], "2020-07-01")
             self.assertEqual(response_data["payload"]["end"], "2020-07-31")
