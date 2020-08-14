@@ -13,9 +13,9 @@
         Filter by Contest
       </button>
       <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-          <a class="dropdown-item" href="/users/">None</a>
+          <a class="dropdown-item" href="/dashboard/users/">None</a>
           {% for contest in contests %}
-                <a class="dropdown-item" href="/users/?contest_id={{contest.contest_id}}">Contest - {{contest.start| date:"DATE_FORMAT"}} - {{contest.end| date:"DATE_FORMAT"}}</a>
+            <a class="dropdown-item" href="/dashboard/users/?contest_id={{contest.contest_id}}">Contest - {{contest.start| date:"DATE_FORMAT"}} - {{contest.end| date:"DATE_FORMAT"}}</a>
           {% endfor %}
       </div>
     </div>
@@ -51,8 +51,8 @@
             <tbody>
             {% for appuser in user_stats_list %}
             <tr>
-                <td><a href="/users/{{appuser.account.pk}}">{{appuser.account.name}}</a></td>
-                <td><a href="/users/{{appuser.account.pk}}">{{appuser.account.email}}</a></td>
+                <td><a href="/dashboard/users/{{appuser.account.pk}}">{{appuser.account.name}}</a></td>
+                <td><a href="/dashboard/users/{{appuser.account.pk}}">{{appuser.account.email}}</a></td>
                 <td>{{appuser.account.age}}</td>
                 <td>{{appuser.account.zip}}</td>
                 <td>{{appuser.account.created | date:"DATE_FORMAT"}}</td>
