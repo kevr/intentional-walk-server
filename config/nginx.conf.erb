@@ -37,6 +37,20 @@ http {
     keepalive_timeout 5;
     client_max_body_size <%= ENV['NGINX_CLIENT_MAX_BODY_SIZE'] || 1 %>M;
 
+    location /home/ {
+      rewrite ^([^\?#]*/)([^\?#\./]+)([\?#].*)?$ berkeley.edu/iwalk/$1$2/$3 permanent;
+      proxy_pass https://sites.google.com/;
+      proxy_read_timeout 90;
+      proxy_connect_timeout 90;
+      proxy_redirect off;
+      proxy_set_header X-Real-IP $remote_addr;
+      proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+      proxy_set_header X-Forwarded-Proto $scheme;
+      proxy_set_header Host sites.google.com;
+      proxy_set_header X-NginX-Proxy true;
+      proxy_set_header Connection “”;
+    }
+
     location / {
       proxy_set_header Host $http_host;
       proxy_set_header X-Real-IP $remote_addr;
