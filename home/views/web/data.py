@@ -1,13 +1,24 @@
 import io
 import csv
+import logging
+
 from collections import defaultdict
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta
 from django.http import HttpResponse
 from django.template import loader, Context
+from django.utils import timezone
 
 from home.models import Account, Device, DailyWalk, IntentionalWalk
 from home.templatetags.format_helpers import m_to_mi
 
+logger = logging.getLogger(__name__)
+tz = timezone.get_default_timezone()
+
+# Date to localized datetime
+def date_to_datetime(d: date) -> datetime:
+    return tz.localize(datetime.combine(d, datetime.min.time()))
+
+# VIEWS
 
 def user_agg_csv_view(request):
     if request.user.is_authenticated:
@@ -44,9 +55,9 @@ def user_agg_csv_view(request):
         # Retrieve intentional walks filtered by date range (if specified)
         intentional_walks = (
             IntentionalWalk.objects.filter(
-                start__gte=start_date,
+                start__gte=date_to_datetime(start_date),
                 # time comparison happens at beginning of date
-                end__lt=(end_date + timedelta(days=1)),
+                end__lt=date_to_datetime(end_date + timedelta(days=1)),
             )
             if start_date and end_date
             else IntentionalWalk.objects.all()
@@ -219,9 +230,9 @@ def intentional_walks_csv_view(request):
             # Retrieve intentional walks filtered by date range (if specified)
             q = (
                 account.intentionalwalk_set.filter(
-                    start__gte=start_date,
+                    start__gte=date_to_datetime(start_date),
                     # time comparison happens at beginning of date
-                    end__lt=(end_date + timedelta(days=1)),
+                    end__lt=date_to_datetime(end_date + timedelta(days=1)),
                 )
                 if start_date and end_date
                 else account.intentionalwalk_set.all()
