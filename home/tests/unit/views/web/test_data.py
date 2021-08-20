@@ -18,13 +18,25 @@ from home.utils.generators import (
 )
 
 
-class TestCsvViews(TestCase):
+class Login:
     username = "testadmin"
     password = "test*PW"
 
-    def setUp(self):
+    def __init__(self):
         User.objects.create_user(username=self.username, password=self.password)
 
+
+def setUpModule():
+    Login()
+
+
+class TestCsvViews(TestCase):
+    @staticmethod
+    def login(client: Client):
+        return client.login(username=Login.username, password=Login.password)
+
+    @classmethod
+    def setUpTestData(cls):
         fake = Faker()
         accounts = list(AccountGenerator().generate(1))
         devices = list(DeviceGenerator(accounts).generate(1))
@@ -52,7 +64,7 @@ class TestCsvViews(TestCase):
 
     def test_users_agg_csv_view(self):
         c = Client()
-        self.assertTrue(c.login(username=self.username, password=self.password))
+        self.assertTrue(self.login(c))
         start_date = date(3000, 3, 7)
         end_date = date(3000, 3, 14)
         response = c.get(
@@ -82,7 +94,7 @@ class TestCsvViews(TestCase):
     # Test csv response of daily walks
     def test_daily_walks_csv_view(self):
         c = Client()
-        self.assertTrue(c.login(username=self.username, password=self.password))
+        self.assertTrue(self.login(c))
         start_date = date(3000, 3, 7)
         end_date = date(3000, 3, 14)
         response = c.get(
@@ -111,7 +123,7 @@ class TestCsvViews(TestCase):
     def test_intentional_walks_csv_view(self):
 
         c = Client()
-        self.assertTrue(c.login(username=self.username, password=self.password))
+        self.assertTrue(self.login(c))
         start_date = date(3000, 3, 7)
         end_date = date(3000, 3, 14)
         response = c.get(
