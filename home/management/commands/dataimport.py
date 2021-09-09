@@ -6,7 +6,7 @@ from home.models import Device, DailyWalk, IntentionalWalk
 from home.utils.generators import AccountGenerator, DeviceGenerator
 
 class Command(BaseCommand):
-    help = "Import data"
+    help = "Import walk data from csv"
 
     def add_arguments(self, parser):
         parser.add_argument("FILENAME")
