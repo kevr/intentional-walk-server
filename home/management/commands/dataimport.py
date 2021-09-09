@@ -17,12 +17,16 @@ class Command(BaseCommand):
             self._import_csv(*args, **options)
 
     def _import_csv(*args, **options):
+        line_counter = 0
+        walk_counter = 0
         acct_gen = AccountGenerator()
         dev_gen = DeviceGenerator()
 
-        with open(options["FILENAME"], "r") as f:
+        filename = options["FILENAME"]
+        with open(filename, "r") as f:
             reader = csv.DictReader(f)
             for row in reader:
+                line_counter += 1
                 device_id = row["device_id"]
                 try:
                     device = Device.objects.get(device_id=device_id)
@@ -49,3 +53,6 @@ class Command(BaseCommand):
                     )
                 else:
                     raise ValueError(f"Don't know what to do with {options['type']}")
+                walk_counter += 1
+
+        print(f"Imported {walk_counter} walks from {filename}.")
