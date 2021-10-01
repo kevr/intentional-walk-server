@@ -32,8 +32,6 @@
 
         <!-- Choropleth (intensity) map of users -->
         <div class="container-fluid justify-content-center" id="map-container">
-            <!-- JSON data (TODO: find alternative to stuffing data into div) -->
-            <div style="display: none" id="zipCountData" data-json="{{ zipcounts }}"></div>
             <!-- D3 SVG -->
             <svg id="intensity-map" style="float: left;" width="400" height="300"></svg>
             <div id="geo-info" style="float: left; visibility: hidden; width: 125px; padding-top: 150px;"></div>
@@ -99,7 +97,7 @@
     // Map and count data
     const sf_geojson = "/static/SanFrancisco.Neighborhoods.json";
     // const userdata = "/data/users_agg.csv";
-    const counts = JSON.parse(document.getElementById("zipCountData").getAttribute("data-json"));
+    const counts = {{ zipcounts }};
     const maxCount = Math.max(...Object.values(counts));
 
     // The svg

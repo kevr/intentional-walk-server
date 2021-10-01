@@ -1,7 +1,7 @@
 import itertools
 import json
 import logging
-
+from django.utils.safestring import SafeString
 from django.views import View, generic
 from django.db.models import Sum
 from home.models import Account, DailyWalk, IntentionalWalk, Contest
@@ -93,6 +93,6 @@ class UserListView(generic.ListView):
 
         # This allows us to place json (string) data into the `data-json` prop of a <div />
         # (Probably not ideal but enables us to pass data to <script /> for mapping.)
-        context["zipcounts"] = json.dumps(zipcounts)
+        context["zipcounts"] = SafeString(json.dumps(zipcounts))
 
         return context
