@@ -24,20 +24,23 @@ def user_agg_csv_view(request) -> HttpResponse:
         # GET method with param `contest_id`
         contest_id = request.GET.get("contest_id")
         # Parse params
-        contest = Contest.objects.get(pk=contest_id) if contest_id else None
-        if contest_id is not None:
-            start_date = contest.start
-            end_date = contest.end
-            if not hasattr(contest, "start_baseline") or contest.start_baseline is None:
-                start_baseline = start_date - timedelta(days=30)
-            else:
-                start_baseline = contest.start_baseline
-            end_baseline = contest.start
+        if contest_id is None:
+            return HttpResponse("You are not authorized to view this!")
 
-            baseline_dates = [start_baseline+timedelta(days=x)
-                              for x in range((end_baseline-start_baseline).days)]
-            contest_dates = [start_date+timedelta(days=x)
-                             for x in range(((end_date + timedelta(days=1))-start_date).days)]
+        contest = Contest.objects.get(pk=contest_id)
+
+        start_date = contest.start
+        end_date = contest.end
+        if not hasattr(contest, "start_baseline") or contest.start_baseline is None:
+            start_baseline = start_date - timedelta(days=30)
+        else:
+            start_baseline = contest.start_baseline
+        end_baseline = contest.start
+
+        baseline_dates = [start_baseline+timedelta(days=x)
+                          for x in range((end_baseline-start_baseline).days)]
+        contest_dates = [start_date+timedelta(days=x)
+                         for x in range(((end_date + timedelta(days=1))-start_date).days)]
 
         response = HttpResponse(content_type='text/csv')
         response['Content-Disposition'] = 'attachment; filename="users_agg.csv"'
@@ -64,7 +67,7 @@ def user_agg_csv_view(request) -> HttpResponse:
         daily_walks, intentional_walks = get_contest_walks(contest)
         new_signups = {
             a["email"]: a for a in get_new_signups(contest, include_testers=False)
-        } if contest else dict()
+        }
 
         for acct in new_signups.values():
             if acct["email"] not in daily_walks:
@@ -83,6 +86,39 @@ def user_agg_csv_view(request) -> HttpResponse:
                 writer.writerow(row_data)
 
         # Add all accounts found in filtered daily walk data
+        # Retrieve all accounts
+        print('###################')
+        # TODO: contest_walks is a 2D dict. Key1: Email [Key2 Date: steps],
+        # e.g. {chris@chris.com: {3/1/22: 1000}, {3/2...etc}, ali@ali.com: etc}
+
+        contest_walks = dict()
+
+        all_accounts = Account.objects.all().order_by("created")
+        for account in all_accounts:
+            # Retrieve daily walks filtered by date range (if specified)
+            q = (
+                account.dailywalk_set.filter(
+                    date__range=(start_date, end_date),
+                )
+                if start_date and end_date
+                else account.dailywalk_set.all()
+            )
+            account_contest_walks = q.order_by("created")
+            for daily_walk in account_contest_walks:
+                print(account.email, daily_walk.date, daily_walk.steps)
+
+                # writer.writerow([
+                #     account.email,
+                #     account.name,
+                #     daily_walk.date,
+                #     daily_walk.steps,
+                #     daily_walk.distance,
+                #     daily_walk.device.device_id,
+                #     daily_walk.created,
+                # ])
+
+        print('###################')
+
         for email, dw_row in daily_walks.items():
             acct = Account.objects.values(*ACCOUNT_FIELDS).get(
                 email=email
@@ -124,6 +160,8 @@ def user_agg_csv_view(request) -> HttpResponse:
                 #     - iw_row["rw_pause_time"]
                 # ) / 60 if iw_row else None,  # minutes
             }
+            # for date in baseline_dates:
+            #     row_data[date] = DailyWalk
             writer.writerow(row_data)
 
         return response
