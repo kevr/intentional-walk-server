@@ -50,6 +50,7 @@ class DeviceGenerator:
             values["account"] = random.choice(self.accounts)
         return values
 
+
 class DailyWalkGenerator:
     # Requires a list of device ids
     def __init__(self, devices: List[str]):
@@ -73,6 +74,7 @@ class DailyWalkGenerator:
         if self.devices:
             values["device"] = random.choice(self.devices)
         return values
+
 
 class IntentionalWalkGenerator:
     # Requires a list of device ids
@@ -101,6 +103,7 @@ class IntentionalWalkGenerator:
         if self.devices:
             values["device"] = random.choice(self.devices)
         return values
+
 
 class ContestGenerator:
     def __init__(self):

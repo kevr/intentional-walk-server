@@ -25,7 +25,8 @@ class Login:
     password = "test*PW"
 
     def __init__(self):
-        User.objects.create_user(username=self.username, password=self.password)
+        User.objects.create_user(
+            username=self.username, password=self.password)
 
 
 class TestCsvViews(TestCase):
@@ -59,7 +60,8 @@ class TestCsvViews(TestCase):
         iwalks1 = IntentionalWalkGenerator(device1)
         for dt in range(5):
             # Set dates on walks to [2, 4, 6, 8, 10] (3000-03)
-            t = utc.localize(datetime(3000, 3, 2, 10, 0)) + timedelta(days=(dt * 2))
+            t = utc.localize(datetime(3000, 3, 2, 10, 0)) + \
+                timedelta(days=(dt * 2))
             next(iwalks0.generate(1, start=t, end=(t + timedelta(hours=2))))
             next(iwalks1.generate(1, start=t, end=(t + timedelta(hours=2))))
 
@@ -96,6 +98,7 @@ class TestCsvViews(TestCase):
         content = response.content.decode("utf-8")
         reader = csv.DictReader(io.StringIO(content))
         rows = list(reader)
+        print(rows)
         headers = reader.fieldnames
         self.assertIn("email", headers)
         self.assertIn("total_steps", headers)
@@ -134,8 +137,10 @@ class TestCsvViews(TestCase):
             self.assertEqual(4, len(walks))  # [7, 8, 9, 10]
 
             for walk in walks:
-                self.assertGreaterEqual(date.fromisoformat(walk["date"]), start_date)
-                self.assertLessEqual(date.fromisoformat(walk["date"]), end_date)
+                self.assertGreaterEqual(
+                    date.fromisoformat(walk["date"]), start_date)
+                self.assertLessEqual(
+                    date.fromisoformat(walk["date"]), end_date)
 
     # Test csv response of intentional (recorded) walks
     def test_intentional_walks_csv_view(self):

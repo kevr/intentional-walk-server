@@ -14,8 +14,10 @@ from home.views.web.user import ACCOUNT_FIELDS, get_contest_walks, get_new_signu
 
 logger = logging.getLogger(__name__)
 
+
 def yesno(value: bool) -> str:
     return "yes" if value else "no"
+
 
 def user_agg_csv_view(request) -> HttpResponse:
     if request.user.is_authenticated:
@@ -30,7 +32,7 @@ def user_agg_csv_view(request) -> HttpResponse:
         response['Content-Disposition'] = 'attachment; filename="users_agg.csv"'
 
         csv_header = [
-            "email", "name", "zip", "age", "account_created",
+            "Participant Name", "account_created", "email", "zip", "age",
             "is_tester", "new_signup", "active_during_contest",
             "num_daily_walks", "total_steps", "total_distance(miles)",
             "num_recorded_walks", "num_recorded_steps",
@@ -49,8 +51,8 @@ def user_agg_csv_view(request) -> HttpResponse:
                 row_data = {
                     **acct,
                     "account_created": acct["created"],
-                    "new_signup": yesno(True), # new signup
-                    "active_during_contest": yesno(False), # inactive
+                    "new_signup": yesno(True),  # new signup
+                    "active_during_contest": yesno(False),  # inactive
                     "num_daily_walks": 0,
                     "num_recorded_walks": 0,
                 }
@@ -76,6 +78,7 @@ def user_agg_csv_view(request) -> HttpResponse:
 
             row_data = {
                 **acct,
+                "Participant Name": acct["name"],
                 "account_created": acct["created"],
                 "new_signup": yesno(email in new_signups),
                 "active_during_contest": yesno(True),
@@ -91,6 +94,7 @@ def user_agg_csv_view(request) -> HttpResponse:
                 ) / 60 if iw_row else None,  # minutes
             }
             row_data.pop("created")
+            row_data.pop("name")
             writer.writerow(row_data)
 
         return response
@@ -139,7 +143,8 @@ def daily_walks_csv_view(request) -> HttpResponse:
         end_date_str = request.GET.get("end_date")
         # Parse params
         # TODO: consider date validation
-        start_date = date.fromisoformat(start_date_str) if start_date_str else None
+        start_date = date.fromisoformat(
+            start_date_str) if start_date_str else None
         end_date = date.fromisoformat(end_date_str) if end_date_str else None
 
         response = HttpResponse(content_type='text/csv')
@@ -186,7 +191,8 @@ def intentional_walks_csv_view(request) -> HttpResponse:
         end_date_str = request.GET.get("end_date")
         # Parse params
         # TODO: consider date validation
-        start_date = date.fromisoformat(start_date_str) if start_date_str else None
+        start_date = date.fromisoformat(
+            start_date_str) if start_date_str else None
         end_date = date.fromisoformat(end_date_str) if end_date_str else None
 
         response = HttpResponse(content_type='text/csv')
