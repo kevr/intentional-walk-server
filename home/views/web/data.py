@@ -97,9 +97,9 @@ def user_agg_csv_view(request) -> HttpResponse:
             # Retrieve daily walks filtered by date range (if specified)
             q = (
                 account.dailywalk_set.filter(
-                    date__range=(start_date, end_date),
+                    date__range=(start_baseline, end_date),
                 )
-                if start_date and end_date
+                if start_baseline and end_date
                 else account.dailywalk_set.all()
             )
             account_contest_walks = q.order_by("created")
@@ -162,9 +162,11 @@ def user_agg_csv_view(request) -> HttpResponse:
                 #     - iw_row["rw_pause_time"]
                 # ) / 60 if iw_row else None,  # minutes
             }
-
             for date in baseline_dates:
+                if date in contest_walks[email]:
+                    row_data[date] = contest_walks[email][date]
             writer.writerow(row_data)
+            print(row_data)
 
         return response
     else:
