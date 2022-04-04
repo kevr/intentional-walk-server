@@ -3,7 +3,7 @@ import csv
 import logging
 
 from collections import defaultdict
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta
 from django.http import HttpResponse
 
 from home.models import Account, Contest, Device, DailyWalk, IntentionalWalk
@@ -25,8 +25,19 @@ def user_agg_csv_view(request) -> HttpResponse:
         contest_id = request.GET.get("contest_id")
         # Parse params
         contest = Contest.objects.get(pk=contest_id) if contest_id else None
-        start_date = contest.start if contest_id else None
-        end_date = contest.end if contest_id else None
+        if contest_id is not None:
+            start_date = contest.start
+            end_date = contest.end
+            if not hasattr(contest, "start_baseline") or contest.start_baseline is None:
+                start_baseline = start_date - timedelta(days=30)
+            else:
+                start_baseline = contest.start_baseline
+            end_baseline = contest.start
+
+            baseline_dates = [start_baseline+timedelta(days=x)
+                              for x in range((end_baseline-start_baseline).days)]
+            contest_dates = [start_date+timedelta(days=x)
+                             for x in range(((end_date + timedelta(days=1))-start_date).days)]
 
         response = HttpResponse(content_type='text/csv')
         response['Content-Disposition'] = 'attachment; filename="users_agg.csv"'
@@ -40,6 +51,13 @@ def user_agg_csv_view(request) -> HttpResponse:
             # "num_recorded_walks", "num_recorded_steps",
             # "total_recorded_distance(miles)", "total_recorded_walk_time",
         ]
+        csv_header.append('BASELINE DATES')
+        for date in baseline_dates:
+            csv_header.append(date)
+        csv_header.append('CONTEST DATES')
+        for date in contest_dates:
+            csv_header.append(date)
+
         writer = csv.DictWriter(response, fieldnames=csv_header)
         writer.writeheader()
 
@@ -80,7 +98,7 @@ def user_agg_csv_view(request) -> HttpResponse:
 
             iw_row = intentional_walks.get(email, {})
 
-            print(acct)
+            # print(acct)
             row_data = {
                 # **acct,
                 "Participant Name": acct["name"],

@@ -98,7 +98,7 @@ class TestCsvViews(TestCase):
         content = response.content.decode("utf-8")
         reader = csv.DictReader(io.StringIO(content))
         rows = list(reader)
-        print(rows)
+        # print(rows)
         headers = reader.fieldnames
         self.assertIn("Email", headers)
         # self.assertIn("total_steps", headers)
