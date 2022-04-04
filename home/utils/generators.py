@@ -16,7 +16,7 @@ class AccountGenerator:
         self.fake = Faker()
         self.zips = list(SAN_FRANCISCO_ZIP_CODES)
         self.genders = list(GenderLabels)
-        # self.races = list(RaceLabels)
+        self.races = list(RaceLabels)
         self.sexual_oriens = list(SexualOrientationLabels)
         self.ethnicity = list(IsLatinoLabels)
 
@@ -26,6 +26,14 @@ class AccountGenerator:
             yield Account.objects.create(**params)
 
     def random_params(self):
+        # Create racial background with 1-3 races identified
+        racial_background = set()
+        num_races = random.randint(1, 3)
+        for x in range(num_races):
+            racial_background.add(random.choice(
+                [enm.name for enm in self.races]))
+        if "DA" in racial_background:
+            racial_background = {'DA'}
         return dict(
             email=self.fake.unique.email(),
             name=self.fake.name(),
@@ -33,7 +41,7 @@ class AccountGenerator:
             zip=random.choice(self.zips),
             age=random.randint(10, 100),
             gender=random.choice([enm.name for enm in self.genders]),
-            # race=random.choice([enm.name for enm in self.races]),
+            race=racial_background,
             sexual_orien=random.choice(
                 [enm.name for enm in self.sexual_oriens]
             ),
