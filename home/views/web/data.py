@@ -32,11 +32,12 @@ def user_agg_csv_view(request) -> HttpResponse:
         response['Content-Disposition'] = 'attachment; filename="users_agg.csv"'
 
         csv_header = [
-            "Participant Name", "account_created", "email", "zip", "age",
-            "is_tester", "new_signup", "active_during_contest",
-            "num_daily_walks", "total_steps", "total_distance(miles)",
-            "num_recorded_walks", "num_recorded_steps",
-            "total_recorded_distance(miles)", "total_recorded_walk_time",
+            "Participant Name", "Date Enrolled", "Email", "Zip Code",
+            "Sexual Orientation", "Gender Identity", "Race", "Age",
+            # "is_tester", "new_signup", "active_during_contest",
+            # "num_daily_walks", "total_steps", "total_distance(miles)",
+            # "num_recorded_walks", "num_recorded_steps",
+            # "total_recorded_distance(miles)", "total_recorded_walk_time",
         ]
         writer = csv.DictWriter(response, fieldnames=csv_header)
         writer.writeheader()
@@ -49,12 +50,14 @@ def user_agg_csv_view(request) -> HttpResponse:
         for acct in new_signups.values():
             if acct["email"] not in daily_walks:
                 row_data = {
-                    **acct,
-                    "account_created": acct["created"],
-                    "new_signup": yesno(True),  # new signup
-                    "active_during_contest": yesno(False),  # inactive
-                    "num_daily_walks": 0,
-                    "num_recorded_walks": 0,
+                    "Participant Name": acct["name"],
+                    "Email": acct["email"],
+                    # **acct,
+                    # "account_created": acct["created"],
+                    # "new_signup": yesno(True),  # new signup
+                    # "active_during_contest": yesno(False),  # inactive
+                    # "num_daily_walks": 0,
+                    # "num_recorded_walks": 0,
                 }
                 row_data.pop("created")
                 # row_data.pop("is_tester")
@@ -76,25 +79,30 @@ def user_agg_csv_view(request) -> HttpResponse:
 
             iw_row = intentional_walks.get(email, {})
 
+            print(acct)
             row_data = {
-                **acct,
+                # **acct,
                 "Participant Name": acct["name"],
-                "account_created": acct["created"],
-                "new_signup": yesno(email in new_signups),
-                "active_during_contest": yesno(True),
-                "num_daily_walks": dw_row["dw_count"],
-                "total_steps": dw_row["dw_steps"],
-                "total_distance(miles)": m_to_mi(dw_row["dw_distance"]),
-                "num_recorded_walks": iw_row.get("rw_count"),
-                "num_recorded_steps": iw_row.get("rw_steps"),
-                "total_recorded_distance(miles)": iw_row.get("rw_distance"),
-                "total_recorded_walk_time": (
-                    iw_row["rw_total_walk_time"].total_seconds()
-                    - iw_row["rw_pause_time"]
-                ) / 60 if iw_row else None,  # minutes
+                "Date Enrolled": acct["created"],
+                "Email": acct["email"],
+                "Zip Code": acct["zip"],
+                "Sexual Orientation": "TBD",
+                "Gender Identity": "TBD",
+                "Race": "TBD",
+                "Age": acct["age"],
+                # "new_signup": yesno(email in new_signups),
+                # "active_during_contest": yesno(True),
+                # "num_daily_walks": dw_row["dw_count"],
+                # "total_steps": dw_row["dw_steps"],
+                # "total_distance(miles)": m_to_mi(dw_row["dw_distance"]),
+                # "num_recorded_walks": iw_row.get("rw_count"),
+                # "num_recorded_steps": iw_row.get("rw_steps"),
+                # "total_recorded_distance(miles)": iw_row.get("rw_distance"),
+                # "total_recorded_walk_time": (
+                #     iw_row["rw_total_walk_time"].total_seconds()
+                #     - iw_row["rw_pause_time"]
+                # ) / 60 if iw_row else None,  # minutes
             }
-            row_data.pop("created")
-            row_data.pop("name")
             writer.writerow(row_data)
 
         return response
