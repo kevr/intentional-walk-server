@@ -91,8 +91,7 @@ def user_agg_csv_view(request) -> HttpResponse:
         # TODO: contest_walks is a 2D dict. Key1: Email [Key2 Date: steps],
         # e.g. {chris@chris.com: {3/1/22: 1000}, {3/2...etc}, ali@ali.com: etc}
 
-        contest_walks = dict()
-
+        contest_walks = {}
         all_accounts = Account.objects.all().order_by("created")
         for account in all_accounts:
             # Retrieve daily walks filtered by date range (if specified)
@@ -104,9 +103,10 @@ def user_agg_csv_view(request) -> HttpResponse:
                 else account.dailywalk_set.all()
             )
             account_contest_walks = q.order_by("created")
+            walk_steps = {}
             for daily_walk in account_contest_walks:
                 print(account.email, daily_walk.date, daily_walk.steps)
-
+                walk_steps[daily_walk.date] = daily_walk.steps
                 # writer.writerow([
                 #     account.email,
                 #     account.name,
@@ -116,7 +116,9 @@ def user_agg_csv_view(request) -> HttpResponse:
                 #     daily_walk.device.device_id,
                 #     daily_walk.created,
                 # ])
+            contest_walks[account.email] = walk_steps
 
+        print(contest_walks)
         print('###################')
 
         for email, dw_row in daily_walks.items():
@@ -160,8 +162,8 @@ def user_agg_csv_view(request) -> HttpResponse:
                 #     - iw_row["rw_pause_time"]
                 # ) / 60 if iw_row else None,  # minutes
             }
-            # for date in baseline_dates:
-            #     row_data[date] = DailyWalk
+
+            for date in baseline_dates:
             writer.writerow(row_data)
 
         return response
