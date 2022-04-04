@@ -7,13 +7,14 @@ from typing import List, Optional
 from uuid import uuid4
 
 from home.models import Account, Contest, DailyWalk, Device, IntentionalWalk
-from home.models.account import SAN_FRANCISCO_ZIP_CODES
+from home.models.account import GenderLabels, SAN_FRANCISCO_ZIP_CODES
 
 
 class AccountGenerator:
     def __init__(self):
         self.fake = Faker()
         self.zips = list(SAN_FRANCISCO_ZIP_CODES)
+        self.genders = list(GenderLabels)
 
     def generate(self, n: int, **kwargs):
         for _ in range(n):
@@ -27,6 +28,7 @@ class AccountGenerator:
             # zip=self.fake["en-US"].postcode(),
             zip=random.choice(self.zips),
             age=random.randint(10, 100),
+            gender='CF',
         )
 
 

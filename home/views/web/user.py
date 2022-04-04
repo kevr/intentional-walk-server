@@ -15,9 +15,12 @@ from home.utils import localize
 
 
 logger = logging.getLogger(__name__)
-ACCOUNT_FIELDS = ["email", "name", "age", "zip", "is_tester", "created"]
+ACCOUNT_FIELDS = ["email", "name", "age",
+                  "zip", "is_tester", "created", "gender"]
 
-### HELPER CLASS/FUNCTIONS
+# HELPER CLASS/FUNCTIONS
+
+
 def get_daily_walk_summaries(**filters):
     dw = (
         DailyWalk.objects.filter(**filters)
@@ -52,6 +55,7 @@ def get_intentional_walk_summaries(**filters):
 
     return {row["account__email"]: row for row in list(iw)}
 
+
 def get_contest_walks(contest: Optional[Contest]):
     # DailyWalk and IntentionalWalk accessors
     daily_walks = DailyWalk.objects
@@ -74,6 +78,7 @@ def get_contest_walks(contest: Optional[Contest]):
         get_intentional_walk_summaries(**iw_filters)
     )
 
+
 def get_new_signups(contest: Contest, include_testers=False):
     accounts = Account.objects.values(*ACCOUNT_FIELDS).filter(
         created__range=(
@@ -86,7 +91,7 @@ def get_new_signups(contest: Contest, include_testers=False):
     ]
 
 ########################################################################
-###   VIEW(S)
+# VIEW(S)
 ########################################################################
 #
 # User list page
@@ -94,6 +99,8 @@ def get_new_signups(contest: Contest, include_testers=False):
 #       which is a list of rows containing user stats to be displayed
 #       (see home/tempolates/home/user_list.html)
 #
+
+
 class UserListView(generic.ListView):
     template_name = "home/user_list.html"
     model = Account
@@ -112,7 +119,8 @@ class UserListView(generic.ListView):
         # Default href for download button
         context["download_url"] = "/data/users_agg.csv"
 
-        contest = Contest.objects.get(contest_id=contest_id) if contest_id else None
+        contest = Contest.objects.get(
+            contest_id=contest_id) if contest_id else None
         daily_walks, intentional_walks = get_contest_walks(contest)
 
         # Prepare loading of data into context
@@ -154,7 +162,8 @@ class UserListView(generic.ListView):
             if contest and acct["created"] > localize(contest.end):
                 continue
 
-            user_stats = user_stats_container.get(email, dict(new_signup=False))
+            user_stats = user_stats_container.get(
+                email, dict(new_signup=False))
             user_stats["account"] = acct
             user_stats["dw_steps"] = dw_row["dw_steps"]
             user_stats["dw_distance"] = m_to_mi(dw_row["dw_distance"])
