@@ -34,17 +34,19 @@ class AccountGenerator:
                 [enm.name for enm in self.races]))
         if "DA" in racial_background:
             racial_background = {'DA'}
+        gender_background = random.choice([en.name for en in self.genders])
         return dict(
             email=self.fake.unique.email(),
             name=self.fake.name(),
             # zip=self.fake["en-US"].postcode(),
             zip=random.choice(self.zips),
             age=random.randint(10, 100),
-            gender=random.choice([enm.name for enm in self.genders]),
+            gender=gender_background,
+            gender_other='Faʻafafine' if gender_background == 'OT' else None,
             race=racial_background,
-            sexual_orien=random.choice(
-                [enm.name for enm in self.sexual_oriens]
-            ),
+            race_other='Middle Eastern' if "OT" in racial_background else None,
+            sexual_orien=random.choice([en.name for en in self.sexual_oriens]),
+            is_latino=random.choice([en.name for en in self.ethnicity]),
         )
 
 

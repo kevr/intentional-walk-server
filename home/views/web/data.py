@@ -33,7 +33,8 @@ def user_agg_csv_view(request) -> HttpResponse:
 
         csv_header = [
             "Participant Name", "Date Enrolled", "Email", "Zip Code",
-            "Sexual Orientation", "Gender Identity", "Race", "Age",
+            "Sexual Orientation", "Gender Identity", "Race", "Other Race",
+            "Is Latino", "Age",
             # "is_tester", "new_signup", "active_during_contest",
             # "num_daily_walks", "total_steps", "total_distance(miles)",
             # "num_recorded_walks", "num_recorded_steps",
@@ -59,7 +60,7 @@ def user_agg_csv_view(request) -> HttpResponse:
                     # "num_daily_walks": 0,
                     # "num_recorded_walks": 0,
                 }
-                row_data.pop("created")
+                # row_data.pop("created")
                 # row_data.pop("is_tester")
                 writer.writerow(row_data)
 
@@ -89,6 +90,8 @@ def user_agg_csv_view(request) -> HttpResponse:
                 "Sexual Orientation": acct["sexual_orien"],
                 "Gender Identity": acct["gender"],
                 "Race": acct["race"],
+                "Other Race": acct["race_other"],
+                "Is Latino": acct["is_latino"],
                 "Age": acct["age"],
                 # "new_signup": yesno(email in new_signups),
                 # "active_during_contest": yesno(True),
