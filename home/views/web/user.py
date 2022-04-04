@@ -15,8 +15,8 @@ from home.utils import localize
 
 
 logger = logging.getLogger(__name__)
-ACCOUNT_FIELDS = ["email", "name", "age",
-                  "zip", "is_tester", "created", "gender"]
+ACCOUNT_FIELDS = ["email", "name", "age", "zip", "is_tester", "created",
+                  "gender", "race", "sexual_orien"]
 
 # HELPER CLASS/FUNCTIONS
 

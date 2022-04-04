@@ -2,12 +2,13 @@ import random
 
 from datetime import date, timedelta
 from django.utils import timezone
+from enum import Enum
 from faker import Faker
 from typing import List, Optional
 from uuid import uuid4
 
 from home.models import Account, Contest, DailyWalk, Device, IntentionalWalk
-from home.models.account import GenderLabels, SAN_FRANCISCO_ZIP_CODES
+from home.models.account import GenderLabels, IsLatinoLabels, RaceLabels, SAN_FRANCISCO_ZIP_CODES, SexualOrientationLabels
 
 
 class AccountGenerator:
@@ -15,6 +16,9 @@ class AccountGenerator:
         self.fake = Faker()
         self.zips = list(SAN_FRANCISCO_ZIP_CODES)
         self.genders = list(GenderLabels)
+        # self.races = list(RaceLabels)
+        self.sexual_oriens = list(SexualOrientationLabels)
+        self.ethnicity = list(IsLatinoLabels)
 
     def generate(self, n: int, **kwargs):
         for _ in range(n):
@@ -28,7 +32,11 @@ class AccountGenerator:
             # zip=self.fake["en-US"].postcode(),
             zip=random.choice(self.zips),
             age=random.randint(10, 100),
-            gender='CF',
+            gender=random.choice([enm.name for enm in self.genders]),
+            # race=random.choice([enm.name for enm in self.races]),
+            sexual_orien=random.choice(
+                [enm.name for enm in self.sexual_oriens]
+            ),
         )
 
 
